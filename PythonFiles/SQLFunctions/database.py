@@ -63,6 +63,6 @@ class Database:
             
 
     
-mailserver = Database("vmail", "96.126.122.182", "remote", "Nielsen7579")
+mailserver = Database()
 mailserver.connectToDB()
 mailserver.disconnectFromDB()
