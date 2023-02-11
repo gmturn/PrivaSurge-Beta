@@ -61,8 +61,23 @@ class Database:
                         return status
 
             
+    def insertData(self, database, table, columnList, valueList):
+        status = False
+
+        query = f"""
+        USE {database};
+        INSERT INTO {table} ({columnList})
+        VALUES ({valueList});
+        COMMIT;
+        """
+        print(query)
+        pass
+
+
+
 
     
 mailserver = Database()
 mailserver.connectToDB()
 mailserver.disconnectFromDB()
+
