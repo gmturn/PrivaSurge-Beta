@@ -23,6 +23,7 @@ class Database:
                 database=self.dbName
             )
             status = True
+            print(f"Connection to Database {self.dbName} on {self.host} with user: {self.user} is successful")
             return status
         
         except:
@@ -66,18 +67,21 @@ class Database:
 
         query = f"""
         USE {database};
-        INSERT INTO {table} ({columnList})
-        VALUES ({valueList});
+        INSERT INTO {table} ({", ".join(str(x) for x in columnList)})
+        VALUES ({", ".join(str(x) for x in valueList)});
         COMMIT;
         """
         print(query)
-        pass
+        cursor = self.mydb.cursor()
+        #cursor.execute(query)
+        cursor.close()
 
 
 
 
     
-mailserver = Database()
+mailserver = Database('vmail', '139.144.226.13','remote','Nielsen7579')
 mailserver.connectToDB()
+mailserver.insertData("vmail", 'mailbox', ['column1', 'column2'], ['value1', 'value2'])
 mailserver.disconnectFromDB()
 
