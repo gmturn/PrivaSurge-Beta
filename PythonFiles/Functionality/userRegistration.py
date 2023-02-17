@@ -11,7 +11,7 @@ class User:
     def __init__(self):
         pass
 
-    def createPermenantUser(self):
+    def createPermanantUser(self):
         # prompt user to enter the email they would like to create
         client_email = input("Please Enter the email addres you would like to add: ")
         confirm = input("Is " + client_email + " the email address you would like to add? ")
