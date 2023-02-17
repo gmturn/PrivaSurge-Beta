@@ -1,6 +1,6 @@
-from database import Database
+# from database import Database
 import mysql.connector
-import SQLHelperFunctions
+# import .SQLHelperFunctions
 import random
 from datetime import datetime
 from hashlib import sha512
@@ -48,11 +48,11 @@ class User:
                 forwardingColumnList = ["address", "forwarding", "domain", "dest_domain", "is_forwarding"]
                 forwardingValueList = [client_email, client_email, 'privasurge.com', 'privasurge.com', '1' ]
 
-                mailserver = database.Database
-                mailserver.connectToDB()
-                mailserver.insertData('vmail', 'mailbox', mailboxColumnList, mailboxValueList)
-                mailserver.insertData('vmail', 'forwarding', forwardingColumnList, forwardingValueList)
-                mailserver.disconnectFromDB()
+                #mailserver = database.Database
+                #mailserver.connectToDB()
+                #mailserver.insertData('vmail', 'mailbox', mailboxColumnList, mailboxValueList)
+                #mailserver.insertData('vmail', 'forwarding', forwardingColumnList, forwardingValueList)
+                #mailserver.disconnectFromDB()
               
 
 

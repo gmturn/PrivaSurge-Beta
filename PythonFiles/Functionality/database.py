@@ -22,10 +22,12 @@ class Database:
                 password=self.password,
                 database=self.dbName
             )
-            status = True
-            print(f"Connection to Database {self.dbName} on {self.host} with user: {self.user} is successful")
-            return status
-        
+            if self.mydb.is_connected():
+                status = True
+                print(f"Connection to Database {self.dbName} on {self.host} with user: {self.user} is successful")
+                return status
+            else: 
+                status = False
         except:
             status = False
             print("ERROR FUCK TITTY SHIT ASS BITCHHHHH")
@@ -61,27 +63,31 @@ class Database:
                         status = False
                         return status
 
-            
+    def createUserCursor(self,multiStatus):
+        user_cursor = self.mydb.cursor()
+        return user_cursor
+
+
     def insertData(self, database, table, columnList, valueList):
         status = False
+        try:
+            query = f"""
+            USE {database};
+            INSERT INTO {table} ({", ".join(str(x) for x in columnList)})
+            VALUES ({", ".join(str(x) for x in valueList)});
+            """
+            cursor = self.mydb.cursor()
+            #cursor.execute(query)
+            print(query)
+            cursor.commit
+            cursor.close()
+            status = True
+            return status
+        except:
+            status = False
+            print('Error Inserting data into table')
 
-        query = f"""
-        USE {database};
-        INSERT INTO {table} ({", ".join(str(x) for x in columnList)})
-        VALUES ({", ".join(str(x) for x in valueList)});
-        COMMIT;
-        """
-        print(query)
-        cursor = self.mydb.cursor()
-        #cursor.execute(query)
-        cursor.close()
 
 
 
-
-    
-mailserver = Database('vmail', '139.144.226.13','remote','Nielsen7579')
-mailserver.connectToDB()
-mailserver.insertData("vmail", 'mailbox', ['column1', 'column2'], ['value1', 'value2'])
-mailserver.disconnectFromDB()
 
