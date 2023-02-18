@@ -1,0 +1,4 @@
+02/17/23 19:00 - New commit to Github adding the functionality that requires the user to sign up to privasurge.com with a privasurge email. This new function creates a new email for the user and adds that email into the vmail mailbox and forwarding as 
+                    well as the web_data.users table to make sure that they can then log into the website with that account and therefore manage their account. The web_id between users and mailbox is also successfully linked
+                    
+

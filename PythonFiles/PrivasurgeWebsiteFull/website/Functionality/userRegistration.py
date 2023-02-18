@@ -29,7 +29,7 @@ class User:
             print(err)
      
 
-    def createPermenantUser(self, username, client_email, password):
+    def createPermenantUser(self, username, client_email, password, web_id):
             # setting basic variables
             STORAGE_DIRECTORY = "/var/vmail"
             STORAGE_NODE = "vmail1"
@@ -57,10 +57,10 @@ class User:
                     USE vmail;
                     INSERT INTO mailbox (username, password, name,
                      storagebasedirectory,storagenode, maildir,
-                     quota, domain, active, passwordlastchange, created)
+                     quota, domain, active, passwordlastchange, created, web_id)
                     VALUES ({client_email}, '{hashedPassString}', '{username}',
                      '{STORAGE_DIRECTORY}','{STORAGE_NODE}', '{filepath}',
-                     '{DEFAULT_QUOTA}', 'privasurge.net', '1', NOW(), NOW());
+                     '{DEFAULT_QUOTA}', 'privasurge.net', '1', NOW(), NOW(), '{web_id}');
                     """
 
             sqlQuereyForwardings = f"""

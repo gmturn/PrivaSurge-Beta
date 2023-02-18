@@ -84,9 +84,19 @@ def new_eUser():
         else:
             flash('Email and Account created Successfully', category='success')
             newUser = User(email_username)
-            newUser.createPermenantUser(username = email_username, client_email = email, password = password1)
             newUser.createWebUser(email, password1, firstName, lastName)
+            cursor = mysql.connection.cursor()
+            cursor.execute(f"SELECT user_id FROM web_data.users WHERE email = {email};")
+            uid = cursor.fetchone()
+            stored_uid = uid[0]
+            cursor.close()
+            newUser.createPermenantUser(username = email_username, client_email = email, password = password1, web_id=stored_uid)
             
+        
+            
+            
+
+
     return render_template('create_email.html')
 
 @auth.route('/signup', methods=['GET', 'POST']) 
