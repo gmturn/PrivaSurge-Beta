@@ -1,8 +1,10 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session, make_response
 from website import COOKIE_TIME_OUT
 from website.database import mysql
+from website.Functionality.userRegistration import User
 import MySQLdb.cursors
 import re
+
 
 auth = Blueprint('auth', __name__)
 
@@ -50,6 +52,43 @@ def logout():
     return render_template('home.html')
 
 
+@auth.route('/new_eUser', methods=['GET', 'POST'])
+def new_eUser():
+    if request.method == 'POST':
+        email_username = request.form.get('email_username')
+        firstName = request.form.get('firstName')
+        lastName = request.form.get('lastName')
+        password1 = request.form.get('password1')
+        password2 = request.form.get('password2')
+        email = email_username + "@privasurge.net"
+        
+        email = f"'{email}'"
+        cursor = mysql.connection.cursor()
+        cursor.execute(f"SELECT * FROM vmail.mailbox WHERE username = {email}")
+        account = cursor.fetchone()
+        cursor.close()
+        if account:
+            flash('Account already exists', category='error')
+        elif  re.match(r'[^@]+@[^@]+\.[^@]+', email_username):
+            flash("Please do not include '@' or domain name in username", category='error')
+        elif len(email_username) < 4:
+            flash('Not a valid email address', category='error') # displays data on form - category name is irrelevant - used later to display messaged in differnt color
+        elif len(firstName) < 2:
+            flash('Not a valid First Name', category='error')
+        elif not email_username or not password1 or not firstName or not lastName:
+            flash('Please fill out form before submission')    
+        elif password1 != password2:
+            flash('Password\'s don\'t match', category='error')
+        elif len(password1) < 7:
+            flash('Insecure Password', category='error')
+        else:
+            flash('Email and Account created Successfully', category='success')
+            newUser = User(email_username)
+            newUser.createPermenantUser(username = email_username, client_email = email, password = password1)
+            newUser.createWebUser(email, password1, firstName, lastName)
+            
+    return render_template('create_email.html')
+
 @auth.route('/signup', methods=['GET', 'POST']) 
 def sign_up():
     if request.method == 'POST':
@@ -87,7 +126,7 @@ def sign_up():
             cursor = mysql.connection.cursor()
             sql = f"""
                 INSERT INTO users (email, password, first_name, last_name)
-                    VALUES ("{email}", "{password1}", "{firstName}", "{lastName}")
+                    VALUES ({email}, "{password1}", "{firstName}", "{lastName}")
             """
             cursor.execute(sql)
             mysql.connection.commit()

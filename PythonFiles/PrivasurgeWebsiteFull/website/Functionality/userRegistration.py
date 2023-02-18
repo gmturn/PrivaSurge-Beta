@@ -1,6 +1,5 @@
 # from database import Database
-import mysql.connector
-# import .SQLHelperFunctions
+from website.database import mysql
 import random
 from datetime import datetime
 from hashlib import sha512
@@ -8,52 +7,84 @@ from base64 import b64encode
 import os
 
 class User:
-    def __init__(self):
-        pass
+    def __init__(self, username):
+        self.username = username
 
-    def createPermenantUser(self):
-        # prompt user to enter the email they would like to create
-        client_email = input("Please Enter the email addres you would like to add: ")
-        confirm = input("Is " + client_email + " the email address you would like to add? ")
-        if (confirm == "Yes"):
+    def createWebUser(self, email, passkey, firstName, lastName):
+        
+
+        
+            
+        sql = f"""
+
+            INSERT INTO web_data.users (email, password, first_name, last_name)
+                VALUES ({email}, "{passkey}", "{firstName}", "{lastName}")
+        """
+        try:
+            cursor = mysql.connection.cursor()
+            cursor.execute(sql)
+            mysql.connection.commit()
+            cursor.close() 
+        except mysql.connection.Error as err:
+            print(err)
+     
+
+    def createPermenantUser(self, username, client_email, password):
             # setting basic variables
             STORAGE_DIRECTORY = "/var/vmail"
             STORAGE_NODE = "vmail1"
             PASSWORD_SCHEME = "SSHA512"
-            DEFAULT_QUOTA = '1024'
+            DEFAULT_QUOTA = "1024"
 
             # The directorys on the mail server are hashed for a specific format
             # directory format = "/privasurge.com/u/s/e/username/"
-            username = client_email.split('@')[0]
             firstLetter = username[0]
             secondLetter = username[1]
             thirdLetter = username[2]
-            filepath = 'privasurge.com/' + firstLetter + '/' + secondLetter + '/' + thirdLetter + '/' + username + '-' + hashDate() + '/'
+
+            #dont forget to change privasurge.com to privasurge.net
+            filepath = 'privasurge.net/' + firstLetter + '/' + secondLetter + '/' + thirdLetter + '/' + username + '-' + hashDate() + '/'
+
 
             # checking to see if the client entered the correct password
-            clientPassword = input('Please enter your chosen password: ')
-            clientPasswordCheck = input('Please renter your chosen password: ')
-            if clientPassword != clientPasswordCheck:
-                print('ERROR: Passwords do not match')
-            else:
-                hashedPassword = hashPassword(clientPassword)
-                hashedPassString = '{SSHA512}' + repr(hashedPassword)[2:-1]
+            hashedPassword = hashPassword(password)
+            hashedPassString = '{SSHA512}' + repr(hashedPassword)[2:-1]
+            
 
-                #creation of the column and value list for SQL query generation
-                mailboxColumnList = ["username", "password", "name", "storagebasedirectory", "storagenode", "maildir", 
-                                    "quota", "domain", "active", "passwordlastchange", "created"]
-                mailboxValueList = [client_email, hashedPassString, username, STORAGE_DIRECTORY, 
-                                    STORAGE_NODE, filepath, DEFAULT_QUOTA, 'privasurge.com', '1', 'NOW()', 'NOW()']
 
-                forwardingColumnList = ["address", "forwarding", "domain", "dest_domain", "is_forwarding"]
-                forwardingValueList = [client_email, client_email, 'privasurge.com', 'privasurge.com', '1' ]
+            #creation of the column and value list for SQL query generation
+            sqlQuereyMailBox = f"""
+                    USE vmail;
+                    INSERT INTO mailbox (username, password, name,
+                     storagebasedirectory,storagenode, maildir,
+                     quota, domain, active, passwordlastchange, created)
+                    VALUES ({client_email}, '{hashedPassString}', '{username}',
+                     '{STORAGE_DIRECTORY}','{STORAGE_NODE}', '{filepath}',
+                     '{DEFAULT_QUOTA}', 'privasurge.net', '1', NOW(), NOW());
+                    """
 
-                #mailserver = database.Database
-                #mailserver.connectToDB()
-                #mailserver.insertData('vmail', 'mailbox', mailboxColumnList, mailboxValueList)
-                #mailserver.insertData('vmail', 'forwarding', forwardingColumnList, forwardingValueList)
-                #mailserver.disconnectFromDB()
-              
+            sqlQuereyForwardings = f"""
+                    INSERT INTO forwardings (address, forwarding, domain, dest_domain, is_forwarding)
+                            VALUES ({client_email}, {client_email},'privasurge.net', 'privasurge.net', 1);
+                    """
+            
+            #combining the two rows for the sake of speed and simplicity - must append commit to sql querey
+            
+            sqlQuerey = sqlQuereyMailBox + sqlQuereyForwardings + '\nCOMMIT;'
+            try:
+                cursor = mysql.connection.cursor()
+                print(sqlQuerey)
+                cursor.execute(sqlQuerey)
+                mysql.connection.commit()
+                cursor.close()
+            except mysql.connect.Error as err:
+                print(err)
+            #mailserver = database.Database
+            #mailserver.connectToDB()
+            #mailserver.insertData('vmail', 'mailbox', mailboxColumnList, mailboxValueList)
+            #mailserver.insertData('vmail', 'forwarding', forwardingColumnList, forwardingValueList)
+            #mailserver.disconnectFromDB()
+            
 
 
 
@@ -171,4 +202,4 @@ def hashPassword(password):
 
 if __name__ == '__main__':
     user1 = User()
-    user1.createTempEmail('Nielsen7579', 'Nielsen7579', 'jnielsen1919@gmail.com', 1)
+    user1.createPermenantUser('jnielsen1919', 'jnielsen1919@privasurge.net', 'Nielsen7579')
