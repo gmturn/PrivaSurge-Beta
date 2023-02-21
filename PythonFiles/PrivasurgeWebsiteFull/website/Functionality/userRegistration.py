@@ -11,10 +11,6 @@ class User:
         self.username = username
 
     def createWebUser(self, email, passkey, firstName, lastName):
-        
-
-        
-            
         sql = f"""
 
             INSERT INTO web_data.users (email, password, first_name, last_name)
@@ -137,6 +133,19 @@ class User:
 
             columnListForwarding = ['address', 'forwarding', 'domain', 'dest_domain', 'is_forwarding', 'active']
             valueListForwarding = [aliasEmail, forwardingAddress, 'privasurge.net', forwardingDomain, '1', '1']
+            
+            #fetching the web_id of the user requesting a temp email 
+            creationDate = fetchDate()
+
+            cursor = mysql.connection.cursor()
+            cursor.execute(f"SELECT user_id FROM web_data.users WHERE email = {forwardingAddress};")
+            uid = cursor.fetchone()
+            stored_uid = uid[0]
+            cursor.close()
+
+            #fetching date for storage and deletion purposes
+
+
             sqlQuereyMailBox = f"""
                     USE vmail;
                     INSERT INTO mailbox (username, password, name,
@@ -152,9 +161,16 @@ class User:
                             VALUES ('{aliasEmail}', '{forwardingAddress}','privasurge.net', '{forwardingDomain}', 1);
                     """
             
+            sqlQuereyTempData = f"""
+            INSERT INTO temp_email_data (web_id, email_alias, reference_email, date_created, file_path)
+                            VALUES ('{stored_uid}', '{aliasEmail}', '{forwardingAddress}', '{creationDate}', '{filepath}');
+        
+            """
+
+
             #combining the two rows for the sake of speed and simplicity - must append commit to sql querey
             if (db):
-                sqlQuerey = sqlQuereyMailBox + sqlQuereyForwardings + '\nCOMMIT;'
+                sqlQuerey = sqlQuereyMailBox + sqlQuereyForwardings + sqlQuereyTempData + '\nCOMMIT;'
                 cursor = db.cursor()
                 print('executed successfully')
                 #cursor.execute(sqlQuerey, multi=True)
@@ -191,6 +207,11 @@ def hashDate():
     hashedDateString = year + '.' + month + '.' + day + '.' + hour + '.' + minute + '.' + second
     return hashedDateString
 
+def fetchDate():
+    creationDate = str(datetime.now())
+    creationDate = creationDate[0:10]
+    return creationDate
+
 def hashPassword(password):
     password = bytes(password.encode('utf-8'))
     salt = os.urandom(8)
@@ -201,5 +222,4 @@ def hashPassword(password):
 
 
 if __name__ == '__main__':
-    user1 = User()
-    user1.createPermenantUser('jnielsen1919', 'jnielsen1919@privasurge.net', 'Nielsen7579')
+    pass
