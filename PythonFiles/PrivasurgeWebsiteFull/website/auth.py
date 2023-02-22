@@ -1,10 +1,12 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session, make_response
-from website import COOKIE_TIME_OUT
-from website.database import mysql
-from website.Functionality.userRegistration import User
+from database import mysql
+from Functionality.userRegistration import User
 import MySQLdb.cursors
 import re
 
+global COOKIE_TIME_OUT
+#COOKIE_TIME_OUT = 60*60*24*7 #7 days
+COOKIE_TIME_OUT = 60*5 #5 minutes
 
 auth = Blueprint('auth', __name__)
 

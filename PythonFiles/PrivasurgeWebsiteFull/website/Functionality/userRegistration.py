@@ -1,5 +1,5 @@
 # from database import Database
-from website.database import mysql
+from .database import mysql
 import random
 from datetime import datetime
 from hashlib import sha512

@@ -1,0 +1,31 @@
+{%extends "account/account.html" %}
+
+
+
+{%block accountDetails %}
+    <div id="temp-email">
+        <h1>Your Temporary Email Is: </h1>
+        {% if aliasEmail %}
+            <p>{{ aliasEmail  }}</p>
+        {% endif %}
+        <form method="post">
+            <a href='#' id='test'><button class='btn btn-default'>Test</button></a>
+    </form>
+        
+    </div>
+
+
+{% endblock %}
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type=text/javascript>
+$(function() {
+  $('a#test').on('click', function(e) {
+    e.preventDefault()
+    $.getJSON('/background_process_test',
+        function(data) {
+         console.log(data)
+    });
+  });
+});
+</script>

@@ -1,9 +1,11 @@
+import mysql.connector  
 from datetime import date, datetime
+from mysql.connector.errors import Error
 
-
-
+# the idea behind this file is to have it run as a cron job script on the database server once a day
 
 def autoDeleteTempEmail():
+    mysql.connector.connect(host="45.79.53.24", user="remote_test", password="Nielsen7579", database='vmail')
     # in Temp Email Data Table results[0] = first row | results[0][0] = web_id | results[0][1] = email_alias | results[0][2] = reference_email | results[0][3] = date_created | results[0][4] = file_path
     # import every date in the table from temp_email_data 
     cursor = mysql.connection.cursor()

@@ -1,0 +1,12 @@
+02/21/23 21:45 - Rebuilt flask directory into PrivasurgeWeb directory to fix all import issues. Additionally instantiated the database object with a correctly working insertData function. Object still needs further fleshing out. User object also functions properly.
+                    all indirect functionality is now places in the functionality module to keep files more readable and to avoid import errors in the future. 
+
+
+02/20/23 21:35 - Began work on the automation of temp email deletion after 15 days. There is now a temp_email_data table in vmail database which links and tracks necessary information. Additionally added a small piece of code that logs the date of the 
+                    email creation in this data table (in createTempEmail function). The deletion of data from mailbox and forwardings aswell as from the actual file path still needs to be completed. 
+
+
+02/17/23 19:00 - New commit to Github adding the functionality that requires the user to sign up to privasurge.com with a privasurge email. This new function creates a new email for the user and adds that email into the vmail mailbox and forwarding as 
+                    well as the web_data.users table to make sure that they can then log into the website with that account and therefore manage their account. The web_id between users and mailbox is also successfully linked
+                    
+
